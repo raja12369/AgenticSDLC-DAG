@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Agentic SDLC Console</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E14;
+    --panel:#131722;
+    --panel-2:#171C29;
+    --line:#232838;
+    --text:#E6E9F0;
+    --muted:#7C8496;
+    --teal:#2DD4BF;
+    --amber:#F5A623;
+    --coral:#FF6B6B;
+    --slate:#3A4058;
+    --slate-fill:#1A1F2E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;}
+  #root{min-height:100vh;}
+  .app{display:grid;grid-template-columns:1fr 420px;grid-template-rows:auto 1fr auto;
+    min-height:100vh;grid-template-areas:"topbar topbar" "graph detail" "trace trace";}
+  .topbar{grid-area:topbar;display:flex;gap:12px;align-items:flex-start;
+    padding:20px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:var(--panel);}
+  .brand{display:flex;flex-direction:column;margin-right:8px;min-width:220px;}
+  .brand .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+    color:var(--teal);text-transform:uppercase;}
+  .brand h1{font-size:18px;margin:2px 0 0;font-weight:600;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+  input[type=text], textarea{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    border-radius:6px;padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+    outline:none;
+  }
+  input[type=text]:focus, textarea:focus{border-color:var(--teal);}
+  textarea{width:340px;resize:vertical;min-height:38px;}
+  .btn{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    border-radius:6px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+    transition:border-color .15s, background .15s;
+  }
+  .btn:hover{border-color:var(--teal);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn.primary{background:var(--teal);color:#062521;border-color:var(--teal);}
+  .btn.primary:hover{filter:brightness(1.08);}
+  .btn.warn{background:var(--amber);color:#3a2400;border-color:var(--amber);}
+  .btn-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+  .runid{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);}
+  .runid b{color:var(--teal);}
+
+  .graph{grid-area:graph;padding:20px;overflow:auto;}
+  .graph svg{width:100%;height:auto;max-width:640px;display:block;margin:0 auto;}
+  .node-rect{fill:var(--slate-fill);stroke:var(--slate);stroke-width:1.5;cursor:pointer;
+    transition:stroke .2s, fill .2s;}
+  .node-rect:hover{stroke:var(--teal);}
+  .node-rect.done{fill:#0F2C28;stroke:var(--teal);}
+  .node-rect.running{fill:#2E2308;stroke:var(--amber);}
+  .node-rect.failed{fill:#2E1414;stroke:var(--coral);}
+  .node-rect.approval{fill:#2E2308;stroke:var(--amber);stroke-dasharray:4 3;}
+  .node-rect.selected{stroke-width:2.5;}
+  .node-label{font-family:'IBM Plex Mono',monospace;font-size:13px;fill:var(--text);
+    text-anchor:middle;pointer-events:none;font-weight:500;}
+  .node-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;text-anchor:middle;
+    pointer-events:none;}
+  .edge{stroke:var(--line);stroke-width:1.5;fill:none;}
+  .edge.lit{stroke:var(--teal);}
+  .pulse{animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+  @media (prefers-reduced-motion: reduce){ .pulse{animation:none;} }
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;padding:0 20px 16px;font-size:11px;
+    font-family:'IBM Plex Mono',monospace;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:9px;height:9px;border-radius:2px;display:inline-block;}
+
+  .detail{grid-area:detail;border-left:1px solid var(--line);background:var(--panel);
+    padding:18px;overflow:auto;}
+  .detail h2{font-size:13px;margin:0 0 4px;font-family:'IBM Plex Mono',monospace;
+    color:var(--teal);letter-spacing:.04em;}
+  .detail .sub{font-size:11.5px;color:var(--muted);margin-bottom:14px;}
+  .detail pre{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
+    padding:12px;font-size:11.5px;font-family:'IBM Plex Mono',monospace;white-space:pre-wrap;
+    word-break:break-word;color:#C9CEDA;max-height:340px;overflow:auto;}
+  .approve-box{margin-top:14px;padding:12px;border:1px dashed var(--amber);border-radius:6px;
+    background:#2E230822;}
+  .approve-box p{margin:0 0 10px;font-size:12.5px;color:var(--amber);}
+  .empty-hint{color:var(--muted);font-size:12.5px;line-height:1.6;}
+
+  .trace{grid-area:trace;border-top:1px solid var(--line);background:var(--panel);
+    padding:14px 20px 20px;}
+  .trace h2{font-size:12px;margin:0 0 10px;font-family:'IBM Plex Mono',monospace;
+    color:var(--muted);letter-spacing:.06em;}
+  table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
+  th{text-align:left;color:var(--muted);font-weight:500;padding:6px 10px;border-bottom:1px solid var(--line);}
+  td{padding:6px 10px;border-bottom:1px solid var(--line);color:#C9CEDA;}
+  .status-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:600;}
+  .status-pill.SUCCEEDED{background:#0F2C28;color:var(--teal);}
+  .status-pill.FAILED{background:#2E1414;color:var(--coral);}
+  .status-pill.STARTED{background:#2E2308;color:var(--amber);}
+  .status-pill.AWAITING_APPROVAL{background:#2E2308;color:var(--amber);}
+  .status-pill.BLOCKED{background:#1A1F2E;color:var(--muted);}
+  .log-line{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+  #boot-error{padding:24px;color:#FF6B6B;font-family:'IBM Plex Mono',monospace;
+    white-space:pre-wrap;max-width:680px;font-size:13px;line-height:1.6;}
+</style>
+</head>
+<body>
+<div id="root"><div id="boot-status" style="padding:24px;color:#7C8496;font-family:monospace;">Loading React from CDN...</div></div>
+
+<script>
+  function showBootError(msg){
+    var root = document.getElementById('root');
+    root.innerHTML = '<div id="boot-error">\u26A0 ' + msg + '</div>';
+  }
+</script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"
+        onerror="showBootError('React failed to load from unpkg.com. This network/proxy is likely blocking that CDN. Fix: download https://unpkg.com/react@18/umd/react.development.js and https://unpkg.com/react-dom@18/umd/react-dom.development.js manually (e.g. from a phone hotspot), save them next to this HTML file, and change the two <script src> tags near the top of the file to the local filenames.')"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+        onerror="showBootError('React-DOM failed to load from unpkg.com — same cause/fix as the React script above.')"></script>
+
+<script>
+try {
+
+if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+  showBootError('React did not load (scripts loaded but React/ReactDOM are undefined). Check the browser console (F12) for the actual network error.');
+} else {
+
+var e = React.createElement;
+var useState = React.useState, useCallback = React.useCallback, useEffect = React.useEffect;
+
+var PHASES = ["REQUIREMENT","TASK","IMPACT","DESIGN","CODE","TEST","DOCUMENTATION","RELEASE","SUMMARY"];
+var DEPENDENCIES = {
+  REQUIREMENT: [], TASK: ["REQUIREMENT"], IMPACT: ["TASK"], DESIGN: ["IMPACT"],
+  CODE: ["DESIGN"], TEST: ["CODE"], DOCUMENTATION: ["CODE"],
+  RELEASE: ["TEST","DOCUMENTATION"], SUMMARY: ["RELEASE"]
+};
+var APPROVAL_GATED = new Set(["RELEASE"]);
+
+// rect centers in the 600x650 SVG canvas - mirrors PhaseGraph's fork/join shape
+var POS = {
+  REQUIREMENT:{x:300,y:40}, TASK:{x:300,y:120}, IMPACT:{x:300,y:200}, DESIGN:{x:300,y:280},
+  CODE:{x:300,y:360}, TEST:{x:170,y:440}, DOCUMENTATION:{x:430,y:440},
+  RELEASE:{x:300,y:520}, SUMMARY:{x:300,y:600}
+};
+var EDGES = [
+  ["REQUIREMENT","TASK"],["TASK","IMPACT"],["IMPACT","DESIGN"],["DESIGN","CODE"],
+  ["CODE","TEST"],["CODE","DOCUMENTATION"],["TEST","RELEASE"],["DOCUMENTATION","RELEASE"],
+  ["RELEASE","SUMMARY"]
+];
+
+function contextKey(phase){ return phase.toLowerCase() + "Spec"; }
+
+function statusOf(phase, ctx){
+  var completedPhases = ctx.completedPhases, trace = ctx.trace, approvedPhases = ctx.approvedPhases;
+  if (completedPhases.has(contextKey(phase))) return "done";
+  var entries = trace.filter(function(t){ return t.phase === phase; });
+  var last = entries[entries.length - 1];
+  if (last) {
+    if (last.status === "FAILED") return "failed";
+    if (last.status === "STARTED") return "running";
+    if (last.status === "AWAITING_APPROVAL") return "approval";
+    if (last.status === "BLOCKED") return "blocked";
+  }
+  var depsMet = DEPENDENCIES[phase].every(function(d){ return completedPhases.has(contextKey(d)); });
+  if (APPROVAL_GATED.has(phase)) {
+    if (depsMet && !approvedPhases.has(phase)) return "approval";
+  }
+  return depsMet ? "ready" : "blocked";
+}
+
+function badgeFor(status){
+  var map = { done:"\u2713 DONE", running:"\u25CF RUNNING", failed:"\u2715 FAILED",
+    approval:"\u26A0 APPROVAL", blocked:"\u2013 BLOCKED", ready:"READY" };
+  return map[status];
+}
+
+function PhaseNode(props){
+  var phase = props.phase, status = props.status, selected = props.selected, onClick = props.onClick;
+  var p = POS[phase];
+  var cls = "node-rect"
+    + (status==="done" ? " done" : "")
+    + (status==="running" ? " running pulse" : "")
+    + (status==="failed" ? " failed" : "")
+    + (status==="approval" ? " approval" : "")
+    + (selected ? " selected" : "");
+  var badgeColor = status==="done" ? "var(--teal)" : status==="failed" ? "var(--coral)"
+    : (status==="running"||status==="approval") ? "var(--amber)" : "var(--muted)";
+  return e('g', { onClick: function(){ onClick(phase); } },
+    e('rect', { className:cls, x:p.x-70, y:p.y-25, width:140, height:50, rx:8 }),
+    e('text', { className:'node-label', x:p.x, y:p.y+4 }, phase),
+    e('text', { className:'node-badge', x:p.x, y:p.y+22, fill:badgeColor }, badgeFor(status))
+  );
+}
+
+function Graph(props){
+  var ctx = props.ctx, selected = props.selected, onSelect = props.onSelect;
+  var edges = EDGES.map(function(pair){
+    var a = pair[0], b = pair[1];
+    var pa = POS[a], pb = POS[b];
+    var lit = ctx.completedPhases.has(contextKey(a)) && ctx.completedPhases.has(contextKey(b));
+    return e('line', { key:a+b, className:'edge'+(lit?' lit':''),
+      x1:pa.x, y1:pa.y+25, x2:pb.x, y2:pb.y-25 });
+  });
+  var nodes = PHASES.map(function(phase){
+    return e(PhaseNode, { key:phase, phase:phase, status:statusOf(phase, ctx),
+      selected: selected===phase, onClick:onSelect });
+  });
+  return e('svg', { viewBox:'0 0 600 650' }, edges.concat(nodes));
+}
+
+function App(){
+  var baseUrlState = useState("http://localhost:8080"); var baseUrl = baseUrlState[0], setBaseUrl = baseUrlState[1];
+  var userInputState = useState("Build a new login feature with email/password auth and a forgot-password flow");
+  var userInput = userInputState[0], setUserInput = userInputState[1];
+  var runIdState = useState(""); var runId = runIdState[0], setRunId = runIdState[1];
+  var completedState = useState(new Set()); var completedPhases = completedState[0], setCompletedPhases = completedState[1];
+  var approvedState = useState(new Set()); var approvedPhases = approvedState[0], setApprovedPhases = approvedState[1];
+  var traceState = useState([]); var trace = traceState[0], setTrace = traceState[1];
+  var resultsState = useState({}); var results = resultsState[0], setResults = resultsState[1];
+  var selectedState = useState(null); var selected = selectedState[0], setSelected = selectedState[1];
+  var busyState = useState(null); var busyPhase = busyState[0], setBusyPhase = busyState[1];
+  var logState = useState([]); var log = logState[0], setLog = logState[1];
+
+  var pushLog = useCallback(function(msg){
+    setLog(function(l){ return l.slice(-8).concat([new Date().toLocaleTimeString() + "  " + msg]); });
+  }, []);
+
+  var refreshStatus = useCallback(function(rid){
+    var id = rid || runId;
+    if (!id) return Promise.resolve();
+    return fetch(baseUrl + "/sdlc/" + id + "/status")
+      .then(function(res){ if (!res.ok) return null; return res.json(); })
+      .then(function(body){
+        if (!body) return;
+        setCompletedPhases(new Set(body.completedPhases || []));
+        setApprovedPhases(new Set(body.approvedPhases || []));
+        setTrace(body.trace || []);
+      })
+      .catch(function(err){ pushLog("status refresh failed: " + err.message); });
+  }, [baseUrl, runId, pushLog]);
+
+  useEffect(function(){
+    if (!runId) return;
+    var t = setInterval(function(){ refreshStatus(runId); }, 4000);
+    return function(){ clearInterval(t); };
+  }, [runId, refreshStatus]);
+
+  function startRun(){
+    fetch(baseUrl + "/sdlc/start", { method:"POST" })
+      .then(function(res){ return res.json(); })
+      .then(function(body){
+        setRunId(body.runId);
+        setCompletedPhases(new Set()); setApprovedPhases(new Set()); setTrace([]); setResults({});
+        pushLog("run started: " + body.runId);
+      })
+      .catch(function(err){ pushLog("start failed: " + err.message); });
+  }
+
+  function runPhase(phase){
+    if (!runId) { pushLog("start a run first"); return; }
+    setBusyPhase(phase);
+    fetch(baseUrl + "/sdlc/" + runId + "/phase/" + phase.toLowerCase(), {
+      method:"POST", headers:{ "Content-Type":"text/plain" }, body: userInput
+    })
+      .then(function(res){ return res.json().then(function(body){ return { res:res, body:body }; }); })
+      .then(function(r){
+        if (!r.res.ok) {
+          pushLog(phase + " blocked: " + (r.body.error || r.res.status));
+        } else {
+          setResults(function(rs){ var next = Object.assign({}, rs); next[phase] = r.body; return next; });
+          setSelected(phase);
+          pushLog(phase + " completed");
+        }
+      })
+      .catch(function(err){ pushLog(phase + " error: " + err.message); })
+      .finally(function(){ setBusyPhase(null); refreshStatus(runId); });
+  }
+
+  function runFull(){
+    setBusyPhase("FULL");
+    fetch(baseUrl + "/sdlc/full", {
+      method:"POST", headers:{ "Content-Type":"text/plain" }, body: userInput
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(body){
+        setRunId(body.runId);
+        var flat = {};
+        Object.entries(body.results || {}).forEach(function(entry){
+          var phase = entry[0].replace(/Spec$/,"").toUpperCase();
+          flat[phase] = entry[1];
+        });
+        setResults(flat);
+        setTrace(body.trace || []);
+        setCompletedPhases(new Set(Object.keys(body.results || {})));
+        pushLog("full run: " + body.stopReason + (body.stoppedAt ? " @ " + body.stoppedAt : ""));
+        refreshStatus(body.runId);
+      })
+      .catch(function(err){ pushLog("full run error: " + err.message); })
+      .finally(function(){ setBusyPhase(null); });
+  }
+
+  function resume(){
+    if (!runId) return;
+    setBusyPhase("RESUME");
+    fetch(baseUrl + "/sdlc/" + runId + "/resume", { method:"POST" })
+      .then(function(res){ return res.json(); })
+      .then(function(body){
+        var flat = Object.assign({}, results);
+        Object.entries(body.results || {}).forEach(function(entry){
+          flat[entry[0].replace(/Spec$/,"").toUpperCase()] = entry[1];
+        });
+        setResults(flat);
+        setTrace(body.trace || []);
+        setCompletedPhases(new Set(Object.keys(body.results || {})));
+        pushLog("resume: " + body.stopReason + (body.stoppedAt ? " @ " + body.stoppedAt : ""));
+      })
+      .catch(function(err){ pushLog("resume error: " + err.message); })
+      .finally(function(){ setBusyPhase(null); });
+  }
+
+  function approve(phase){
+    if (!runId) return;
+    fetch(baseUrl + "/sdlc/" + runId + "/approve/" + phase.toLowerCase(), { method:"POST" })
+      .then(function(){ pushLog(phase + " approved"); refreshStatus(runId); })
+      .catch(function(err){ pushLog("approve error: " + err.message); });
+  }
+
+  var ctx = { completedPhases:completedPhases, approvedPhases:approvedPhases, trace:trace };
+  var selStatus = selected ? statusOf(selected, ctx) : null;
+
+  var topbar = e('div', { className:'topbar' },
+    e('div', { className:'brand' },
+      e('span', { className:'eyebrow' }, 'Agentic SDLC'),
+      e('h1', null, 'Pipeline Console'),
+      runId ? e('span', { className:'runid' }, 'run ', e('b', null, runId))
+            : e('span', { className:'runid' }, 'no active run')
+    ),
+    e('div', { className:'field' },
+      e('label', null, 'API BASE URL'),
+      e('input', { type:'text', value:baseUrl, style:{width:200},
+        onChange: function(ev){ setBaseUrl(ev.target.value); } })
+    ),
+    e('div', { className:'field' },
+      e('label', null, 'REQUIREMENT INPUT'),
+      e('textarea', { value:userInput, rows:2,
+        onChange: function(ev){ setUserInput(ev.target.value); } })
+    ),
+    e('div', { className:'btn-row' },
+      e('button', { className:'btn', onClick:startRun }, 'Start Run'),
+      e('button', { className:'btn primary', onClick:runFull, disabled: busyPhase==='FULL' },
+        busyPhase==='FULL' ? 'Running...' : 'Run Full Pipeline'),
+      e('button', { className:'btn', onClick:resume, disabled: !runId || busyPhase==='RESUME' },
+        busyPhase==='RESUME' ? 'Resuming...' : 'Resume'),
+      e('button', { className:'btn', onClick:function(){ refreshStatus(runId); }, disabled: !runId }, 'Refresh')
+    )
+  );
+
+  var graphPanel = e('div', { className:'graph' },
+    e(Graph, { ctx:ctx, selected:selected, onSelect:setSelected }),
+    e('div', { className:'legend' },
+      e('span', null, e('span', { className:'dot', style:{background:'var(--slate-fill)', border:'1px solid var(--slate)'} }), 'pending'),
+      e('span', null, e('span', { className:'dot', style:{background:'var(--amber)'} }), 'running / awaiting approval'),
+      e('span', null, e('span', { className:'dot', style:{background:'var(--teal)'} }), 'done'),
+      e('span', null, e('span', { className:'dot', style:{background:'var(--coral)'} }), 'failed')
+    ),
+    e('div', { style:{textAlign:'center'} },
+      (selected && selStatus === 'ready') ? e('button', { className:'btn primary',
+        onClick:function(){ runPhase(selected); }, disabled: busyPhase===selected },
+        busyPhase===selected ? ('Running ' + selected + '...') : ('Run ' + selected)) : null,
+      (selected && selStatus === 'approval' && !approvedPhases.has(selected)) ? e('button',
+        { className:'btn warn', onClick:function(){ approve(selected); } }, 'Approve ' + selected) : null
+    )
+  );
+
+  var detailChildren = [
+    e('h2', { key:'h' }, selected || 'SELECT A PHASE')
+  ];
+  if (!selected) {
+    detailChildren.push(e('p', { className:'empty-hint', key:'hint' },
+      'Click a node in the graph to run that phase, approve a gate, or inspect its output. ' +
+      'Nodes light up teal once their dependencies are satisfied and green once done.'));
+  } else {
+    detailChildren.push(e('div', { className:'sub', key:'sub' },
+      'status: ' + selStatus + '  |  depends on: ' + (DEPENDENCIES[selected].join(', ') || 'none')));
+    if (selStatus === 'approval' && !approvedPhases.has(selected)) {
+      detailChildren.push(e('div', { className:'approve-box', key:'approve' },
+        e('p', null, 'This phase requires human approval before it can execute.'),
+        e('button', { className:'btn warn', onClick:function(){ approve(selected); } }, 'Approve ' + selected)
+      ));
+    }
+    detailChildren.push(results[selected]
+      ? e('pre', { key:'pre' }, JSON.stringify(results[selected], null, 2))
+      : e('p', { className:'empty-hint', key:'noresult' }, 'No output captured yet for this phase in this session.'));
+  }
+  detailChildren.push(e('div', { style:{marginTop:18}, key:'log' },
+    log.map(function(l, i){ return e('div', { className:'log-line', key:i }, l); })
+  ));
+  var detailPanel = e('div', { className:'detail' }, detailChildren);
+
+  var traceRows = trace.length === 0
+    ? [e('tr', { key:'empty' }, e('td', { colSpan:5, style:{color:'var(--muted)'} }, 'No executions yet.'))]
+    : trace.slice().reverse().map(function(t, i){
+        return e('tr', { key:i },
+          e('td', null, t.phase),
+          e('td', null, t.agentName),
+          e('td', null, e('span', { className:'status-pill ' + t.status }, t.status)),
+          e('td', null, t.attempt),
+          e('td', null, (t.durationMs != null ? (t.durationMs + 'ms') : '-'))
+        );
+      });
+
+  var tracePanel = e('div', { className:'trace' },
+    e('h2', null, 'AUDIT TRAIL'),
+    e('table', null,
+      e('thead', null, e('tr', null,
+        e('th', null, 'Phase'), e('th', null, 'Agent'), e('th', null, 'Status'),
+        e('th', null, 'Attempt'), e('th', null, 'Duration'))),
+      e('tbody', null, traceRows)
+    )
+  );
+
+  return e('div', { className:'app' }, topbar, graphPanel, detailPanel, tracePanel);
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+
+}
+} catch (err) {
+  showBootError('Runtime error while starting the UI: ' + err.message + '\n\n' + (err.stack || ''));
+}
+</script>
+</body>
+</html>

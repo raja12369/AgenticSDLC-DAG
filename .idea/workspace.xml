@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fa43c2cb-5ca0-4630-a947-926764738ab9" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/rajat/Downloads/Google Photos/code-with-quarkus/agenticsdlc" value="3GdenIoBOMWhKkZoLH9szHlALWd" />
+      <entry key="_C:/Users/rajat/Downloads/Google Photos/code-with-quarkus/code-with-quarkus" value="3GcK9kREnxAfTmFcqVjDkqxBdY7" />
+    </persistenceIdMap>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/AgenticSDLC-DAG" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="1.2560320171646288E-266" />
+      <entry key="S2" value="3.3494351029197484E-67" />
+      <entry key="S5" value="2.6936537964370977E-27" />
+      <entry key="S10" value="6.182200203461365E-14" />
+      <entry key="S30" value="5.933603753747812E-5" />
+      <entry key="S60" value="0.010808633893600558" />
+      <entry key="M2" value="0.14677923166492715" />
+      <entry key="M5" value="0.73029771829012" />
+      <entry key="M10" value="1.4263111444751204" />
+      <entry key="M15" value="1.9281966317273125" />
+      <entry key="M30" value="2.906943482540426" />
+      <entry key="H1" value="4.1062496385068945" />
+      <entry key="H2" value="5.542408225886423" />
+      <entry key="H4" value="6.861666767852512" />
+      <entry key="D1" value="8.564169108344618" />
+      <entry key="W1" value="8.935400695661832" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.000001421652209" />
+      <entry key="S2" value="1.0345301401499973" />
+      <entry key="S5" value="1.260183251304809" />
+      <entry key="S10" value="1.5100816123963563" />
+      <entry key="S30" value="1.7990771761254103" />
+      <entry key="S60" value="1.910902521396155" />
+      <entry key="M2" value="2.2043703928401284" />
+      <entry key="M5" value="3.368739437225666" />
+      <entry key="M10" value="4.907407070966572" />
+      <entry key="M15" value="6.2276752762985605" />
+      <entry key="M30" value="9.15113024172644" />
+      <entry key="H1" value="12.181442602266872" />
+      <entry key="H2" value="14.565482666375463" />
+      <entry key="H4" value="16.115544344004984" />
+      <entry key="D1" value="17.658566414199893" />
+      <entry key="W1" value="17.950490033847476" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="2.417467784380983E-7" />
+      <entry key="MS500" value="0.047497652544608256" />
+      <entry key="S2" value="0.47212820011020523" />
+      <entry key="S5" value="0.8601745591065508" />
+      <entry key="S10" value="1.2091634893493406" />
+      <entry key="S30" value="1.6556660704191575" />
+      <entry key="S60" value="1.8418567867435065" />
+      <entry key="M2" value="2.3050307582526774" />
+      <entry key="M5" value="4.072450872482797" />
+      <entry key="M10" value="6.314931500580046" />
+      <entry key="M15" value="8.13998960711698" />
+      <entry key="M30" value="12.04619075759955" />
+      <entry key="H1" value="16.27950662453479" />
+      <entry key="H2" value="20.10279717854525" />
+      <entry key="H4" value="22.974300739059345" />
+      <entry key="D1" value="26.222184208575467" />
+      <entry key="W1" value="26.885810075889918" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3GcK9kREnxAfTmFcqVjDkqxBdY7" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.code-with-quarkus [clean].executor": "Run",
+    "Maven.code-with-quarkus [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Quarkus.code-with-quarkus.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/GITHUB/Java/AgenticSDLC-DAG",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "project.propVCSSupport.Confirmation",
+    "to.speed.mode.migration.done": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="QuarkusRunConfigurationType" factoryName="Quarkus">
+      <module name="code-with-quarkus" />
+      <QsMavenRunConfiguration>
+        <MavenSettings>
+          <option name="myGeneralSettings" />
+          <option name="myRunnerSettings" />
+          <option name="myRunnerParameters">
+            <MavenRunnerParameters>
+              <option name="cmdOptions" />
+              <option name="profiles">
+                <set />
+              </option>
+              <option name="goals">
+                <list>
+                  <option value="quarkus:dev" />
+                </list>
+              </option>
+              <option name="multimoduleDir" />
+              <option name="pomFileName" value="pom.xml" />
+              <option name="profilesMap">
+                <map />
+              </option>
+              <option name="projectsCmdOptionValues">
+                <list />
+              </option>
+              <option name="resolveToWorkspace" value="false" />
+              <option name="workingDirPath" value="$PROJECT_DIR$" />
+            </MavenRunnerParameters>
+          </option>
+        </MavenSettings>
+        <targetMavenLocalRepo />
+        <emulateTerminal>false</emulateTerminal>
+        <profile>dev</profile>
+      </QsMavenRunConfiguration>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="code-with-quarkus" type="QuarkusRunConfigurationType" factoryName="Quarkus" nameIsGenerated="true">
+      <module name="code-with-quarkus" />
+      <QsMavenRunConfiguration>
+        <MavenSettings>
+          <option name="myGeneralSettings" />
+          <option name="myRunnerSettings" />
+          <option name="myRunnerParameters">
+            <MavenRunnerParameters>
+              <option name="cmdOptions" />
+              <option name="profiles">
+                <set />
+              </option>
+              <option name="goals">
+                <list>
+                  <option value="quarkus:dev" />
+                </list>
+              </option>
+              <option name="multimoduleDir" />
+              <option name="pomFileName" value="pom.xml" />
+              <option name="profilesMap">
+                <map />
+              </option>
+              <option name="projectsCmdOptionValues">
+                <list />
+              </option>
+              <option name="resolveToWorkspace" value="false" />
+              <option name="workingDirPath" value="$PROJECT_DIR$" />
+            </MavenRunnerParameters>
+          </option>
+        </MavenSettings>
+        <targetMavenLocalRepo />
+        <emulateTerminal>false</emulateTerminal>
+        <profile>dev</profile>
+      </QsMavenRunConfiguration>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-63390994e64e-intellij.indexing.shared.core-IU-262.8665.258" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.8665.258" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fa43c2cb-5ca0-4630-a947-926764738ab9" name="Changes" comment="" />
+      <created>1784265271587</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1784265271587</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/agents/RequirementAgent.java</url>
+          <line>79</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/api/SdlcResource.java</url>
+          <line>51</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/orchestrator/SpecBackfillEngine.java</url>
+          <line>20</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/orchestrator/SpecBackfillEngine.java</url>
+          <line>26</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/orchestrator/SpecBackfillEngine.java</url>
+          <line>28</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/orchestrator/FullSdlcOrchestrator.java</url>
+          <line>55</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/agents/ReleaseAgent.java</url>
+          <line>57</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/agents/ImpactAnalysisAgent.java</url>
+          <line>55</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/agents/SummaryAgent.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/agents/SummaryAgent.java</url>
+          <line>43</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/agents/SummaryAgent.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/orchestrator/FullSdlcOrchestrator.java</url>
+          <line>43</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/orchestrator/FullSdlcOrchestrator.java</url>
+          <line>44</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/exam/agenticsdlc/api/SdlcResource.java</url>
+          <line>33</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

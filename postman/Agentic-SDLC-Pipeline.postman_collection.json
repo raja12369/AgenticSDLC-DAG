@@ -1,0 +1,379 @@
+{
+  "info": {
+    "name": "Agentic SDLC Pipeline",
+    "description": "Stateful, graph-governed SDLC orchestration API. Run requests top-to-bottom within a folder - each request that returns a runId auto-saves it to the collection variable {{runId}} so later requests chain automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "runId", "value": "", "type": "string" },
+    { "key": "userInput", "value": "Build a new login feature with email/password auth and a forgot-password flow", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Start a Run",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": { "raw": "{{baseUrl}}/sdlc/start", "host": ["{{baseUrl}}"], "path": ["sdlc", "start"] },
+        "description": "Creates a new WorkflowContext server-side and returns a runId. Every subsequent call against that runId shares the same context - this is what makes single-phase execution genuinely stateful."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('runId present', () => pm.expect(body.runId).to.be.a('string').and.not.empty);",
+              "pm.collectionVariables.set('runId', body.runId);",
+              "console.log('runId saved:', body.runId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Run Single Phase - Requirement",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/requirement",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "requirement"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" },
+        "description": "REQUIREMENT has no dependencies in the graph, so this always succeeds first."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Response is JSON with normalizedText', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('normalizedText');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Run Single Phase - Task (out of order, should 409 if requirement not done)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/task",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "task"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" },
+        "description": "Depends on REQUIREMENT. Run request #2 first in the same runId - this proves context persists across separate calls (the bug that used to make every call start from a blank context)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Either succeeds (200) or is correctly blocked (409)', () => {",
+              "  pm.expect([200, 409]).to.include(pm.response.code);",
+              "});",
+              "if (pm.response.code === 409) {",
+              "  console.log('Blocked as expected - run request #2 first:', pm.response.json().error);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Run Single Phase - Impact",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/impact",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "impact"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" }
+      }
+    },
+    {
+      "name": "5. Run Single Phase - Design",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/design",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "design"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" }
+      }
+    },
+    {
+      "name": "6. Run Single Phase - Code",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/code",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "code"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" }
+      }
+    },
+    {
+      "name": "7. Run Single Phase - Test (parallel-eligible with Documentation)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/test",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "test"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" },
+        "description": "Depends only on CODE, not on DOCUMENTATION - the two can run in either order or concurrently (see GraphOrchestrator.runAll waves)."
+      }
+    },
+    {
+      "name": "8. Run Single Phase - Documentation (parallel-eligible with Test)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/documentation",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "documentation"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" }
+      }
+    },
+    {
+      "name": "9. Run Single Phase - Release (should 409, needs approval)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/release",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "release"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" },
+        "description": "RELEASE is a human-approval gate (PhaseGraph.requiresApproval). This should return 409 until request #10 approves it."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Blocked pending approval (409)', () => pm.response.to.have.status(409));",
+              "pm.test('Error message mentions approval', () => {",
+              "  pm.expect(pm.response.json().error.toLowerCase()).to.include('approval');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Approve Release",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/approve/release",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "approve", "release"]
+        },
+        "description": "Human approval checkpoint. After this, request #9 (or #12 resume) will let RELEASE execute."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('approved field is RELEASE', () => pm.expect(pm.response.json().approved).to.eql('RELEASE'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Run Single Phase - Release (now approved, should 200)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/release",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "release"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200 now that RELEASE is approved', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Run Single Phase - Summary",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/phase/summary",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "phase", "summary"]
+        },
+        "body": { "mode": "raw", "raw": "{{userInput}}" }
+      }
+    },
+    {
+      "name": "13. Get Run Status / Audit Trail",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/{{runId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "{{runId}}", "status"]
+        },
+        "description": "Returns completedPhases, approvedPhases, and the full execution trace (per-phase status/timing) for this run."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('trace is present and non-empty', () => pm.expect(body.trace).to.be.an('array').that.is.not.empty);",
+              "console.log('Completed phases:', body.completedPhases);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Full Run - Auto-execute Whole Graph (stops at approval gate)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": { "raw": "{{baseUrl}}/sdlc/full", "host": ["{{baseUrl}}"], "path": ["sdlc", "full"] },
+        "body": { "mode": "raw", "raw": "{{userInput}}" },
+        "description": "Creates its own run and drives every wave of the graph automatically, dispatching TEST/DOCUMENTATION concurrently, and stopping (not failing) the moment it reaches RELEASE without approval. Saves its runId to {{runId}} too, overwriting the one from Start a Run."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.collectionVariables.set('runId', body.runId);",
+              "pm.test('Stops at approval gate on first pass', () => {",
+              "  pm.expect(body.stopReason).to.eql('AWAITING_APPROVAL');",
+              "  pm.expect(body.stoppedAt).to.eql('RELEASE');",
+              "});",
+              "console.log('runId saved:', body.runId, 'stopReason:', body.stopReason);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Full Run - Approve then Resume",
+      "item": [
+        {
+          "name": "a. Approve Release",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/sdlc/{{runId}}/approve/release",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdlc", "{{runId}}", "approve", "release"]
+            }
+          }
+        },
+        {
+          "name": "b. Resume Run",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/sdlc/{{runId}}/resume",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdlc", "{{runId}}", "resume"]
+            },
+            "description": "Continues from RELEASE through SUMMARY now that approval is recorded."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Run completed end to end', () => pm.expect(body.stopReason).to.eql('COMPLETED'));",
+                  "console.log('Final trace length:', body.trace.length);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Negative - Unknown runId returns 404",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sdlc/does-not-exist/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["sdlc", "does-not-exist", "status"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Negative - Ambiguous Requirement (validation gate scenario)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "text/plain" }],
+        "url": { "raw": "{{baseUrl}}/sdlc/start", "host": ["{{baseUrl}}"], "path": ["sdlc", "start"] },
+        "description": "Run this, then POST the body 'Make the service faster.' to /sdlc/{new runId}/phase/requirement. If the LLM returns empty acceptanceCriteria for this vague input, SpecValidator should hard-fail with a 500 rather than let it flow downstream - this exercises the ambiguous scenario from the assignment."
+      }
+    }
+  ]
+}
